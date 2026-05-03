@@ -44,7 +44,9 @@ services:
     restart: unless-stopped
 
   ollama:
-    image: ollama/ollama:latest
+    build:
+      context: ./deploy
+      dockerfile: Ollama.dockerfile
     container_name: loomin-ollama
     ports:
       - "11434:11434"

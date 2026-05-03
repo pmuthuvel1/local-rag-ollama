@@ -91,11 +91,15 @@ else
     # docker build -t loomin-backend ./backend
 fi
 
-if docker images | grep -q "ollama/ollama"; then
+if docker images | grep -q "ollama"; then
     echo "  Exporting ollama image..."
-    docker save ollama/ollama -o "$WORK_DIR/images/ollama.tar" 2>/dev/null || echo "    ⚠️  Could not save ollama image"
+    # Get the ollama image ID (could be ollama:latest or custom built image)
+    OLLAMA_IMAGE=$(docker images | grep ollama | awk '{print $1":"$2}' | head -1)
+    docker save "$OLLAMA_IMAGE" -o "$WORK_DIR/images/ollama.tar" 2>/dev/null || echo "    ⚠️  Could not save ollama image"
 else
-    echo "    ⚠️  Ollama image not found. Will be pulled on first run"
+    echo "    ⚠️  Ollama image not found. Building custom ollama image with embedded llama2 model..."
+    docker build -t loomin-ollama -f ./Ollama.dockerfile . 2>/dev/null || echo "    ⚠️  Could not build ollama image"
+    docker save loomin-ollama -o "$WORK_DIR/images/ollama.tar" 2>/dev/null || echo "    ⚠️  Could not save ollama image"
 fi
 
 # =============================================================================

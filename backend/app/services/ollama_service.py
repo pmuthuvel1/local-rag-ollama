@@ -53,6 +53,19 @@ class OllamaService:
             logger.error(f"Error listing Ollama models: {str(e)}")
             return []
     
+    def check_model_available(self, model: Optional[str] = None) -> bool:
+        """
+        Check if a model is available locally in Ollama
+        Returns: True if model is available, False otherwise
+        """
+        model = model or self.default_model
+        try:
+            models = self.list_models()
+            return any(m["name"] == model for m in models)
+        except Exception as e:
+            logger.error(f"Error checking model availability: {str(e)}")
+            return False
+    
     def generate(self, 
                 prompt: str, 
                 model: Optional[str] = None,
@@ -65,6 +78,15 @@ class OllamaService:
         model = model or self.default_model
         
         try:
+            # Check if Ollama is healthy and model is available
+            if not self.check_health():
+                raise Exception(f"Ollama service is not available at {self.base_url}")
+            
+            if not self.check_model_available(model):
+                available_models = self.list_models()
+                model_names = [m["name"] for m in available_models]
+                raise Exception(f"Model '{model}' not found. Available models: {model_names}")
+            
             start_time = time.time()
             
             response = requests.post(
