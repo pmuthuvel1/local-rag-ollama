@@ -23,8 +23,15 @@ export default defineConfig({
     sourcemap: false,
     rollupOptions: {
       output: {
-        manualChunks: {
-          vendor: ['react', 'react-dom', 'axios'],
+        manualChunks(id) {
+          if (id.includes('node_modules')) {
+            if (id.includes('react')) {
+              return 'vendor-react'
+            } else if (id.includes('axios')) {
+              return 'vendor-axios'
+            }
+            return 'vendor'
+          }
         },
       },
     },

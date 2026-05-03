@@ -84,7 +84,7 @@ class APIService {
     return response.data
   }
 
-  async chat(message: string, docId?: number, history = [], useRAG = true): Promise<AIResponse> {
+  async chat(message: string, docId?: number, history: unknown[] = [], useRAG = true): Promise<AIResponse> {
     const response = await this.api.post('/ai/chat', null, {
       params: { user_id: this.userId },
       data: { message, document_id: docId, conversation_history: history, use_rag: useRAG },

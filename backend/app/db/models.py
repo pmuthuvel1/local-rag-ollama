@@ -65,7 +65,7 @@ class ChatHistory(Base):
     document_id = Column(Integer, ForeignKey("documents.id"), nullable=True, index=True)
     role = Column(String)  # "user" or "assistant"
     content = Column(Text)
-    metadata = Column(JSON, nullable=True)  # {request_id, retrieval_time, generation_time, tokens_used, citations}
+    chat_metadata = Column(JSON, nullable=True)  # {request_id, retrieval_time, generation_time, tokens_used, citations}
     created_at = Column(DateTime, default=datetime.utcnow, index=True)
     
     # Relationships
@@ -96,7 +96,7 @@ class RAGChunk(Base):
     chunk_index = Column(Integer)
     content = Column(Text)
     embedding_vector = Column(LargeBinary, nullable=True)  # Serialized numpy array
-    metadata = Column(JSON)  # {file, page, section}
+    chunk_metadata = Column(JSON)  # {file, page, section}
     created_at = Column(DateTime, default=datetime.utcnow)
     
     # Relationships
